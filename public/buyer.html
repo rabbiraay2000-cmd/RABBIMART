@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RabbiMart - Store & Cart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: #f8fafc; color: #1e293b; min-height: 100vh; }
+        
+        header {
+            background: #ffffff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .nav-container {
+            max-width: 1200px; margin: 0 auto; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; color: #4f46e5; text-decoration: none; }
+        .user-nav { display: flex; align-items: center; gap: 1rem; }
+        .user-badge {
+            background: #eef2ff; color: #4f46e5; padding: 0.4rem 0.8rem; border-radius: 9999px; font-weight: 600; font-size: 0.875rem;
+        }
+        .btn-cart {
+            background: #4f46e5; color: white; border: none; padding: 0.55rem 1.2rem; border-radius: 8px;
+            cursor: pointer; font-weight: 700; font-size: 0.95rem; transition: all 0.2s;
+        }
+        .btn-cart:hover { background: #4338ca; }
+        .btn-logout {
+            background: #ef4444; color: white; border: none; padding: 0.45rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600;
+        }
+
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
+        
+        /* Search & Filter Bar */
+        .controls-bar { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; align-items: center; }
+        .search-box { flex: 1; min-width: 260px; position: relative; }
+        .search-box input {
+            width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 1.5px solid #cbd5e1; border-radius: 10px;
+            font-size: 0.95rem; outline: none; transition: border-color 0.2s;
+        }
+        .search-box input:focus { border-color: #4f46e5; }
+        .search-icon { position: absolute; left: 0.85rem; top: 0.8rem; color: #94a3b8; font-size: 1rem; }
+
+        .category-pills { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .pill {
+            padding: 0.6rem 1.1rem; border-radius: 9999px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+            border: 1px solid #e2e8f0; background: white; color: #475569; transition: all 0.2s;
+        }
+        .pill.active, .pill:hover { background: #4f46e5; color: white; border-color: #4f46e5; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+        .product-card {
+            background: white; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); transition: all 0.3s ease; display: flex; flex-direction: column;
+        }
+        .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.08); }
+        
+        .card-img-container {
+            height: 180px; width: 100%; background: #f8fafc; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;
+        }
+        .card-img-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .product-card:hover .card-img-container img { transform: scale(1.05); }
+        .card-img-placeholder { font-size: 3rem; }
+
+        .cat-tag {
+            position: absolute; top: 10px; right: 10px; background: rgba(15, 23, 42, 0.75); color: white;
+            padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; backdrop-filter: blur(4px);
+        }
+
+        .rating-badge {
+            display: inline-flex; align-items: center; gap: 0.2rem; background: #fef3c7; color: #d97706;
+            font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 6px; margin-bottom: 0.5rem;
+        }
+
+        .card-body { padding: 1.25rem; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
+        .product-title { font-size: 1.15rem; font-weight: 600; color: #0f172a; margin-bottom: 0.25rem; text-transform: capitalize; }
+        .seller-info { font-size: 0.775rem; color: #64748b; margin-bottom: 1rem; }
+        .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem; }
+        .price { font-size: 1.35rem; font-weight: 700; color: #10b981; }
+        .btn-add {
+            background: #4f46e5; color: white; border: none; padding: 0.55rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;
+        }
+        .btn-add:hover { background: #4338ca; }
+
+        /* Cart Drawer */
+        .cart-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6); display: none; justify-content: flex-end; z-index: 200;
+        }
+        .cart-sidebar {
+            background: white; width: 100%; max-width: 400px; height: 100%; padding: 2rem; display: flex; flex-direction: column;
+        }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0; }
+        .cart-items { flex-grow: 1; overflow-y: auto; margin: 1.5rem 0; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #f1f5f9; }
+        .cart-controls button {
+            background: #e2e8f0; border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-weight: bold;
+        }
+        .cart-footer { border-top: 1px solid #e2e8f0; padding-top: 1.5rem; }
+        .total-row { display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; }
+        .btn-checkout {
+            width: 100%; background: #10b981; color: white; border: none; padding: 0.85rem; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer;
+        }
+
+        /* Invoice Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7);
+            display: none; align-items: center; justify-content: center; z-index: 300;
+        }
+        .invoice-card {
+            background: white; width: 100%; max-width: 500px; border-radius: 16px; padding: 2rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .invoice-header { border-bottom: 2px dashed #cbd5e1; padding-bottom: 1rem; text-align: center; margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo">🛍️ RabbiMart</a>
+            <div class="user-nav">
+                <span class="user-badge" id="welcomeText">Hi, Buyer</span>
+                <button class="btn-cart" onclick="toggleCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Live Search and Category Filter -->
+        <div class="controls-bar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search products by name..." oninput="filterAndRender()">
+            </div>
+            <div class="category-pills">
+                <button class="pill active" onclick="setCategory('All', this)">All</button>
+                <button class="pill" onclick="setCategory('Electronics', this)">Electronics</button>
+                <button class="pill" onclick="setCategory('Fashion', this)">Fashion</button>
+                <button class="pill" onclick="setCategory('Books', this)">Books</button>
+                <button class="pill" onclick="setCategory('Gaming', this)">Gaming</button>
+            </div>
+        </div>
+
+        <div class="grid" id="productList">
+            <div style="color: #64748b;">Loading products...</div>
+        </div>
+    </div>
+
+    <!-- Slide Cart Drawer -->
+    <div class="cart-overlay" id="cartOverlay">
+        <div class="cart-sidebar">
+            <div class="cart-header">
+                <h3>Shopping Cart 🛒</h3>
+                <button onclick="toggleCart()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+            </div>
+
+            <div class="cart-items" id="cartItemsList">
+                <p style="color: #64748b; text-align: center; margin-top: 2rem;">Your cart is empty.</p>
+            </div>
+
+            <div class="cart-footer">
+                <div class="total-row">
+                    <span>Total:</span>
+                    <span id="cartTotal" style="color: #10b981;">₹0.00</span>
+                </div>
+                <button class="btn-checkout" onclick="placeOrder()">Place Order (Checkout)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Printable Invoice Modal -->
+    <div class="modal-overlay" id="invoiceModal">
+        <div class="invoice-card" id="printableArea">
+            <div class="invoice-header">
+                <h2 style="color: #4f46e5;">⚡ RabbiMart Invoice</h2>
+                <p style="color: #64748b; font-size: 0.85rem;" id="invDate">Date: -</p>
+                <p style="font-weight: 600; font-size: 0.9rem;" id="invBuyer">Buyer: -</p>
+            </div>
+            <div id="invItems" style="margin-bottom: 1.5rem; font-size: 0.9rem;"></div>
+            <div style="border-top: 1px solid #e2e8f0; padding-top: 1rem; display: flex; justify-content: space-between; font-weight: 700; font-size: 1.2rem;">
+                <span>Total Paid:</span>
+                <span id="invTotal" style="color: #10b981;">₹0.00</span>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button onclick="window.print()" style="flex: 1; background: #4f46e5; color: white; border: none; padding: 0.75rem; border-radius: 8px; font-weight: 600; cursor: pointer;">🖨️ Print Invoice</button>
+                <button onclick="closeInvoice()" style="flex: 1; background: #e2e8f0; color: #334155; border: none; padding: 0.75rem; border-radius: 8px; font-weight: 600; cursor: pointer;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+        let allProducts = [];
+        let selectedCategory = 'All';
+
+        const userName = localStorage.getItem('user_name');
+        const userEmail = localStorage.getItem('user_email');
+        if (userName) {
+            document.getElementById('welcomeText').innerText = `👋 Hi, ${userName}`;
+        }
+
+        async function fetchProducts() {
+            try {
+                const response = await fetch('/api/products');
+                const res = await response.json();
+                allProducts = res.products || [];
+                filterAndRender();
+            } catch (err) { console.error(err); }
+        }
+
+        function setCategory(cat, element) {
+            selectedCategory = cat;
+            document.querySelectorAll('.pill').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            filterAndRender();
+        }
+
+        function filterAndRender() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const container = document.getElementById('productList');
+            container.innerHTML = '';
+
+            const filtered = allProducts.filter(p => {
+                const matchesCategory = (selectedCategory === 'All' || (p.category && p.category.toLowerCase() === selectedCategory.toLowerCase()));
+                const matchesSearch = p.name.toLowerCase().includes(query);
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length > 0) {
+                filtered.forEach(p => {
+                    const imageMarkup = (p.image_url && p.image_url.trim() !== '') 
+                        ? `<img src="${p.image_url}" alt="${p.name}" onerror="this.parentElement.innerHTML='<div class=\\'card-img-placeholder\\'>📦</div>'">`
+                        : `<div class="card-img-placeholder">📦</div>`;
+
+                    container.innerHTML += `
+                        <div class="product-card">
+                            <div class="card-img-container">
+                                ${imageMarkup}
+                                <span class="cat-tag">${p.category || 'General'}</span>
+                            </div>
+                            <div class="card-body">
+                                <div>
+                                    <div class="rating-badge">⭐ ${p.rating || 4.8} / 5.0</div>
+                                    <h3 class="product-title">${p.name}</h3>
+                                    <p class="seller-info">Seller: ${p.seller_email}</p>
+                                </div>
+                                <div class="card-footer">
+                                    <span class="price">₹${p.price}</span>
+                                    <button class="btn-add" onclick="addToCart(${p.id})">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                container.innerHTML = '<p style="color: #64748b; grid-column: 1/-1; text-align: center; padding: 2rem;">No matching products found.</p>';
+            }
+        }
+
+        function toggleCart() {
+            const overlay = document.getElementById('cartOverlay');
+            overlay.style.display = overlay.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function addToCart(id) {
+            const product = allProducts.find(p => p.id === id);
+            if (!product) return;
+
+            const existing = cart.find(item => item.id === id);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            renderCart();
+            document.getElementById('cartOverlay').style.display = 'flex';
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.id !== id);
+                }
+            }
+            renderCart();
+        }
+
+        function renderCart() {
+            const cartItemsList = document.getElementById('cartItemsList');
+            const cartCount = document.getElementById('cartCount');
+            const cartTotal = document.getElementById('cartTotal');
+
+            let total = 0;
+            let count = 0;
+            cartItemsList.innerHTML = '';
+
+            if (cart.length === 0) {
+                cartItemsList.innerHTML = '<p style="color: #64748b; text-align: center; margin-top: 2rem;">Your cart is empty.</p>';
+            } else {
+                cart.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    total += itemTotal;
+                    count += item.quantity;
+
+                    cartItemsList.innerHTML += `
+                        <div class="cart-item">
+                            <div>
+                                <h4 style="font-size: 0.95rem;">${item.name}</h4>
+                                <small style="color: #64748b;">₹${item.price} x ${item.quantity}</small>
+                            </div>
+                            <div class="cart-controls" style="display: flex; align-items: center; gap: 0.5rem;">
+                                <button onclick="changeQty(${item.id}, -1)">-</button>
+                                <span>${item.quantity}</span>
+                                <button onclick="changeQty(${item.id}, 1)">+</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            cartCount.innerText = count;
+            cartTotal.innerText = `₹${total.toFixed(2)}`;
+        }
+
+        async function placeOrder() {
+            if (cart.length === 0) return alert('Your cart is empty!');
+            if (!userEmail) {
+                alert('Please login to place an order!');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/orders/place', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ buyer_email: userEmail, items: cart })
+                });
+
+                const res = await response.json();
+                if (res.status === 'success') {
+                    showInvoice(cart);
+                    cart = [];
+                    renderCart();
+                    toggleCart();
+                } else {
+                    alert('Order failed: ' + res.message);
+                }
+            } catch (err) { alert('Server error!'); }
+        }
+
+        function showInvoice(placedCart) {
+            document.getElementById('invDate').innerText = 'Date: ' + new Date().toLocaleString();
+            document.getElementById('invBuyer').innerText = `Buyer: ${userName} (${userEmail})`;
+
+            let itemsHtml = '';
+            let total = 0;
+            placedCart.forEach(i => {
+                const cost = i.price * i.quantity;
+                total += cost;
+                itemsHtml += `
+                    <div style="display: flex; justify-content: space-between; padding: 0.4rem 0;">
+                        <span>${i.name} (x${i.quantity})</span>
+                        <span style="font-weight: 600;">₹${cost.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+
+            document.getElementById('invItems').innerHTML = itemsHtml;
+            document.getElementById('invTotal').innerText = `₹${total.toFixed(2)}`;
+            document.getElementById('invoiceModal').style.display = 'flex';
+        }
+
+        function closeInvoice() {
+            document.getElementById('invoiceModal').style.display = 'none';
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        fetchProducts();
+    </script>
+</body>
+</html>

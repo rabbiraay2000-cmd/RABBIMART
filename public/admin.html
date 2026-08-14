@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - RabbiMart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; }
+
+        header {
+            background: #1e293b; border-bottom: 1px solid #334155; position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+        .nav-container {
+            max-width: 1200px; margin: 0 auto; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo { font-size: 1.4rem; font-weight: 700; color: #818cf8; text-decoration: none; }
+        .btn-logout {
+            background: #ef4444; color: white; border: none; padding: 0.45rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600;
+        }
+
+        .container { max-width: 1200px; margin: 2.5rem auto; padding: 0 2rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .stat-card { background: #1e293b; border: 1px solid #334155; padding: 1.5rem; border-radius: 14px; }
+        .stat-title { font-size: 0.85rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
+        .stat-value { font-size: 2rem; font-weight: 700; color: #f8fafc; margin-top: 0.5rem; }
+
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; }
+        .card-header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .card-header h3 { font-size: 1.25rem; color: #f8fafc; }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { padding: 1rem; background: #0f172a; color: #94a3b8; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid #334155; }
+        td { padding: 1rem; border-bottom: 1px solid #334155; color: #e2e8f0; font-size: 0.95rem; }
+        tr:hover td { background: #27354a; }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef4444; padding: 0.35rem 0.75rem;
+            border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem;
+        }
+        .btn-delete:hover { background: #ef4444; color: white; }
+        .price-badge { color: #34d399; font-weight: 700; }
+
+        select.status-selector {
+            background: #0f172a; color: #e2e8f0; border: 1px solid #475569; padding: 0.3rem 0.6rem; border-radius: 6px; font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo">⚡ RabbiMart Admin</a>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span id="adminGreeting" style="color: #94a3b8; font-size: 0.9rem;">Admin Panel</span>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">Total Products</div>
+                <div class="stat-value" id="totalProductsCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Total Orders</div>
+                <div class="stat-value" id="totalOrdersCount" style="color: #818cf8;">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Total Revenue</div>
+                <div class="stat-value" id="totalRevenue" style="color: #34d399;">₹0</div>
+            </div>
+        </div>
+
+        <!-- Orders Panel -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Customer Orders Log & Delivery Status 🚚</h3>
+                <button class="btn-delete" style="border-color: #818cf8; color: #818cf8; background: transparent;" onclick="loadData()">Refresh All</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Buyer</th>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                            <th>Status Control</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTable">
+                        <tr><td colspan="6" style="text-align: center; color: #64748b;">Loading orders...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Inventory Panel -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Live Product Inventory 🏷️</h3>
+            </div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTable">
+                        <tr><td colspan="5" style="text-align: center; color: #64748b;">Loading products...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const userName = localStorage.getItem('user_name');
+        if (userName) {
+            document.getElementById('adminGreeting').innerText = `👤 ${userName} (Admin)`;
+        }
+
+        async function loadData() {
+            // 1. Fetch Products
+            try {
+                const res = await fetch('/api/products');
+                const data = await res.json();
+                const tbody = document.getElementById('inventoryTable');
+                tbody.innerHTML = '';
+
+                if (data.products && data.products.length > 0) {
+                    document.getElementById('totalProductsCount').innerText = data.products.length;
+                    data.products.forEach(p => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>#${p.id}</td>
+                                <td style="font-weight: 600;">${p.name}</td>
+                                <td><span style="background: #334155; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">${p.category || 'General'}</span></td>
+                                <td class="price-badge">₹${p.price}</td>
+                                <td><button class="btn-delete" onclick="deleteProduct(${p.id})">Delete</button></td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #64748b;">No products found.</td></tr>';
+                }
+            } catch (err) { console.error(err); }
+
+            // 2. Fetch Orders
+            try {
+                const res = await fetch('/api/orders');
+                const data = await res.json();
+                const tbody = document.getElementById('ordersTable');
+                tbody.innerHTML = '';
+
+                let rev = 0;
+                if (data.orders && data.orders.length > 0) {
+                    document.getElementById('totalOrdersCount').innerText = data.orders.length;
+                    data.orders.forEach(o => {
+                        rev += o.total_price;
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>#ORD-${o.id}</td>
+                                <td>${o.buyer_email}</td>
+                                <td style="font-weight: 600;">${o.product_name}</td>
+                                <td>${o.quantity}</td>
+                                <td class="price-badge">₹${o.total_price}</td>
+                                <td>
+                                    <select class="status-selector" onchange="updateOrderStatus(${o.id}, this.value)">
+                                        <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
+                                        <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>🚚 Shipped</option>
+                                        <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>✅ Delivered</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    document.getElementById('totalOrdersCount').innerText = '0';
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b;">No orders placed yet.</td></tr>';
+                }
+                document.getElementById('totalRevenue').innerText = `₹${rev.toFixed(2)}`;
+            } catch (err) { console.error(err); }
+        }
+
+        async function updateOrderStatus(id, newStatus) {
+            await fetch('/api/orders/update-status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, status: newStatus })
+            });
+            alert(`Order #${id} status updated to ${newStatus}!`);
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm(`Delete Product #${id}?`)) return;
+            const res = await fetch('/api/products/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+            const data = await res.json();
+            alert(data.message);
+            loadData();
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        loadData();
+    </script>
+</body>
+</html>

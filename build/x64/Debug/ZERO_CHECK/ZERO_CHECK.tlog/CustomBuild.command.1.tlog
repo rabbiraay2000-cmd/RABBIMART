@@ -1,0 +1,10 @@
+^D:\RABBIMART\BUILD\CMAKEFILES\3A2938F960886B4ED0F9415578BB2938\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/RABBIMART -BD:/RABBIMART/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file D:/RABBIMART/build/RabbiMart.slnx
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
