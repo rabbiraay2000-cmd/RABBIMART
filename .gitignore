@@ -1,0 +1,12 @@
+# Maven build output
+target/
+# Local classpath cache (regenerate with setup.bat)
+cp.txt
+# Local SQLite database (auto-created on startup)
+*.db
+# IDE / OS
+.vscode/
+.idea/
+*.class
+Thumbs.db
+Desktop.ini
