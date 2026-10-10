@@ -83,10 +83,17 @@ public class Main {
             tryExec(st, "ALTER TABLE products ADD COLUMN image_url TEXT;");
             tryExec(st, "ALTER TABLE products ADD COLUMN rating REAL DEFAULT 4.8;");
             tryExec(st, "ALTER TABLE orders ADD COLUMN status TEXT DEFAULT 'Pending';");
-            // Demo admin for viva: admin@rabbimart.com / admin123 (SHA-256, like register())
+            // Demo accounts for viva (passwords SHA-256, like register()):
+            // admin@rabbimart.com / admin123, seller@rabbimart.com / seller123, buyer@rabbimart.com / buyer123
             tryExec(st, "INSERT OR IGNORE INTO users (name, email, password, role) VALUES "
                     + "('Admin', 'admin@rabbimart.com', "
                     + "'240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9', 'admin');");
+            tryExec(st, "INSERT OR IGNORE INTO users (name, email, password, role) VALUES "
+                    + "('Demo Seller', 'seller@rabbimart.com', "
+                    + "'2A76110D06BCC4FD437337B984131CFA82DB9F792E3E2340ACEF9F3066B264E0', 'seller');");
+            tryExec(st, "INSERT OR IGNORE INTO users (name, email, password, role) VALUES "
+                    + "('Demo Buyer', 'buyer@rabbimart.com', "
+                    + "'E547BD13228250DFB4C7DF1D1EBB78CFD9F2ADA56EBB0C425D35829DD3AC4AE8', 'buyer');");
             System.out.println("[DB] SQLite Database Connected & Initialized!");
         } catch (SQLException e) {
             System.err.println("[DB] Database Error: " + e.getMessage());
