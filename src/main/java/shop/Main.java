@@ -121,9 +121,16 @@ public class Main {
         // Frontend calls /api/orders/update-status (admin.html) - keep exact path
         app.post("/api/orders/update-status", Main::updateOrderStatus);
 
-        app.start(8080);
+        // Render/Heroku-style hosts give the port via $PORT env var; default 8080 locally
+        int port = 8080;
+        try {
+            String envPort = System.getenv("PORT");
+            if (envPort != null) port = Integer.parseInt(envPort.trim());
+        } catch (NumberFormatException ignored) { }
+
+        app.start(port);
         System.out.println("=================================================");
-        System.out.println("RabbiMart Server is running on: http://localhost:8080");
+        System.out.println("RabbiMart Server is running on port " + port);
         System.out.println("=================================================");
     }
 
