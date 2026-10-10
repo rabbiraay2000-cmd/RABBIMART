@@ -4,168 +4,212 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - RabbiMart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
+
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            padding: 1.5rem;
         }
+
         .login-card {
             background: #ffffff;
             width: 100%;
             max-width: 420px;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
             text-align: center;
+            margin-bottom: 2rem;
         }
-        .icon {
-            font-size: 40px;
-            margin-bottom: 10px;
+
+        .logo {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
         }
-        h2 {
-            color: #0f172a;
-            font-size: 26px;
+
+        .header h1 {
+            font-size: 1.6rem;
             font-weight: 700;
-            margin-bottom: 6px;
+            color: #0f172a;
         }
-        p.subtitle {
+
+        .header p {
             color: #64748b;
-            font-size: 14px;
-            margin-bottom: 25px;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
         }
+
         .form-group {
-            text-align: left;
-            margin-bottom: 18px;
+            margin-bottom: 1.25rem;
         }
+
         label {
             display: block;
-            font-size: 13px;
+            font-size: 0.85rem;
             font-weight: 600;
             color: #334155;
-            margin-bottom: 6px;
+            margin-bottom: 0.4rem;
         }
-        input, select {
+
+        input {
             width: 100%;
-            padding: 12px 14px;
-            border: 1.5px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 0.8rem 1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.2s ease;
         }
-        input:focus, select:focus {
-            border-color: #2563eb;
+
+        input:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
         }
+
         .btn-submit {
             width: 100%;
-            background: #2563eb;
-            color: #ffffff;
-            padding: 12px;
+            padding: 0.85rem;
+            background: #4f46e5;
+            color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 15px;
+            border-radius: 10px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 10px;
+            transition: all 0.2s ease;
+            margin-top: 0.5rem;
         }
+
         .btn-submit:hover {
-            background: #1d4ed8;
+            background: #4338ca;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px -4px rgba(79, 70, 229, 0.3);
         }
+
         .footer-text {
-            margin-top: 20px;
-            font-size: 13px;
+            text-align: center;
+            margin-top: 1.75rem;
+            font-size: 0.875rem;
             color: #64748b;
         }
+
         .footer-text a {
-            color: #2563eb;
+            color: #4f46e5;
             text-decoration: none;
             font-weight: 600;
+        }
+
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+
+        .error-msg {
+            background: #fee2e2;
+            color: #ef4444;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            display: none;
+            text-align: center;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
 
     <div class="login-card">
-        <div class="icon">🛍️</div>
-        <h2>Welcome Back</h2>
-        <p class="subtitle">Login to your RabbiMart account</p>
+        <div class="header">
+            <div class="logo">🛍️</div>
+            <h1>Welcome Back</h1>
+            <p>Login to your RabbiMart account</p>
+        </div>
+
+        <div class="error-msg" id="errorMsg"></div>
 
         <form id="loginForm">
             <div class="form-group">
-                <label for="email">Email Address / Username</label>
-                <input type="text" id="email" placeholder="name@example.com" value="rabbiraay2000@gmail.com" required>
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="name@example.com" required autocomplete="email">
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" placeholder="••••••••" value="password123" required>
+                <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
             </div>
 
-            <div class="form-group">
-                <label for="role">Select Portal Role</label>
-                <select id="role">
-                    <option value="buyer">Buyer Portal</option>
-                    <option value="seller">Seller Portal</option>
-                    <option value="admin">Admin Suite</option>
-                </select>
-            </div>
-
-            <button type="submit" id="submitBtn" class="btn-submit">Sign In</button>
+            <button type="submit" class="btn-submit" id="submitBtn">Sign In</button>
         </form>
 
-        <p class="footer-text">
+        <div class="footer-text">
             Don't have an account? <a href="register.html">Create one</a>
-        </p>
+        </div>
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('submitBtn');
+            const errorDiv = document.getElementById('errorMsg');
+            const submitBtn = document.getElementById('submitBtn');
+            errorDiv.style.display = 'none';
+
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
 
-            btn.innerText = 'Authenticating...';
-            btn.disabled = true;
+            submitBtn.innerText = 'Signing in...';
+            submitBtn.disabled = true;
 
             try {
-                const res = await fetch('/api/login', {
+                const response = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-                const data = await res.json();
-                if (data.status === 'success') {
-                    localStorage.setItem('user_name', data.name);
-                    localStorage.setItem('user_email', data.email || email);
-                    localStorage.setItem('user_role', data.role);
-                    const role = (data.role || '').toLowerCase();
-                    if (role === 'admin') window.location.href = "admin.html";
-                    else if (role === 'seller') window.location.href = "seller.html";
-                    else window.location.href = "buyer.html";
+
+                const res = await response.json();
+
+                if (res.status === 'success') {
+                    // Session persist
+                    localStorage.setItem('user_email', email);
+                    localStorage.setItem('user_name', res.name);
+                    localStorage.setItem('user_role', res.role);
+
+                    // Auto Role-based Redirection
+                    const role = res.role.toLowerCase();
+                    if (role === 'admin') {
+                        window.location.href = 'admin.html';
+                    } else if (role === 'seller') {
+                        window.location.href = 'seller.html';
+                    } else {
+                        window.location.href = 'buyer.html';
+                    }
                 } else {
-                    alert(data.message || 'Login Failed!');
-                    btn.innerText = 'Sign In';
-                    btn.disabled = false;
+                    errorDiv.innerText = res.message || 'Invalid credentials';
+                    errorDiv.style.display = 'block';
+                    submitBtn.innerText = 'Sign In';
+                    submitBtn.disabled = false;
                 }
             } catch (err) {
-                alert('Server connection error!');
-                btn.innerText = 'Sign In';
-                btn.disabled = false;
+                errorDiv.innerText = 'Server connection error!';
+                errorDiv.style.display = 'block';
+                submitBtn.innerText = 'Sign In';
+                submitBtn.disabled = false;
             }
         });
     </script>
-
 </body>
 </html>
