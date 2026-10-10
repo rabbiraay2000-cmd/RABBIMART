@@ -5,9 +5,11 @@ Frontend: **HTML/CSS/JS** (`public/`) · Backend: **Java 17 + Javalin** (`src/ma
 ## Roles
 | Role | Page | Login |
 |---|---|---|
-| Buyer | `buyer.html` — browse, search, filter, cart, checkout, invoice | register as buyer, or any buyer account |
-| Seller | `seller.html` — add product, view store orders | register as seller |
+| Buyer | `buyer.html` — browse, search, filter, cart, checkout, invoice | `buyer@rabbimart.com` / `buyer123` (seeded) |
+| Seller | `seller.html` — add product, view store orders | `seller@rabbimart.com` / `seller123` (seeded) |
 | Admin | `admin.html` — stats, all orders + status control, delete products | `admin@rabbimart.com` / `admin123` (seeded) |
+
+New accounts: use `register.html` (or `POST /api/register`) — stored SHA-256 hashed in `users` table.
 
 ## Run
 1. Install Java 17+ and Maven, then double-click **`setup.bat`** (first time only).
